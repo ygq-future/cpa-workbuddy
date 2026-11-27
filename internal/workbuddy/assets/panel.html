@@ -69,10 +69,12 @@
       --destructive-10: color-mix(in srgb, var(--destructive-color) 10%, transparent);
       --destructive-30: color-mix(in srgb, var(--destructive-color) 30%, transparent);
 
-      --site-cn-bg: #e8f4ff;
-      --site-cn-text: #155e9b;
-      --site-intl-bg: #eae7ff;
-      --site-intl-text: #3538d4;
+      --site-cn-bg: color-mix(in srgb, #0e7490 9%, transparent);
+      --site-cn-border: color-mix(in srgb, #0e7490 22%, transparent);
+      --site-cn-text: #155e75;
+      --site-intl-bg: color-mix(in srgb, #6d5cae 10%, transparent);
+      --site-intl-border: color-mix(in srgb, #6d5cae 24%, transparent);
+      --site-intl-text: #54438e;
       --plan-pro-bg: linear-gradient(135deg, #fff9e3 0%, #ffe699 55%, #e6b830 100%);
       --plan-pro-border: #d9a516a6;
       --plan-pro-text: #6b4b00;
@@ -91,12 +93,12 @@
       --inset-surface: color-mix(in srgb, var(--bg-secondary) 68%, transparent);
       --overlay-bg: rgba(0, 0, 0, 0.38);
 
-      --ease-smooth: cubic-bezier(0.25, 1, 0.5, 1);
+      --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-fade: cubic-bezier(0.16, 1, 0.3, 1);
       --ease-out-strong: cubic-bezier(0.22, 1, 0.36, 1);
       --ease-exit: cubic-bezier(0.4, 0, 1, 1);
       --dur-hover: 180ms;
       --dur-indicator: 260ms;
-      --dur-slide: 250ms;
       --dur-theme: 180ms;
 
       --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
@@ -168,10 +170,12 @@
         --amber-30: color-mix(in srgb, var(--amber-color) 38%, transparent);
         --destructive-10: color-mix(in srgb, var(--destructive-color) 14%, transparent);
         --destructive-30: color-mix(in srgb, var(--destructive-color) 38%, transparent);
-        --site-cn-bg: #123b5d;
-        --site-cn-text: #8dc9f5;
-        --site-intl-bg: #262395;
-        --site-intl-text: #b5b0ff;
+        --site-cn-bg: color-mix(in srgb, #38bdf8 11%, transparent);
+        --site-cn-border: color-mix(in srgb, #38bdf8 26%, transparent);
+        --site-cn-text: #7dd3fc;
+        --site-intl-bg: color-mix(in srgb, #a78bfa 12%, transparent);
+        --site-intl-border: color-mix(in srgb, #a78bfa 28%, transparent);
+        --site-intl-text: #c4b5fd;
         --plan-pro-bg: linear-gradient(135deg, #4f3d0b 0%, #6e5510 52%, #8f6d10 100%);
         --plan-pro-border: #e2b432b3;
         --plan-pro-text: #fff0a8;
@@ -227,10 +231,12 @@
       --amber-30: color-mix(in srgb, var(--amber-color) 38%, transparent);
       --destructive-10: color-mix(in srgb, var(--destructive-color) 14%, transparent);
       --destructive-30: color-mix(in srgb, var(--destructive-color) 38%, transparent);
-      --site-cn-bg: #123b5d;
-      --site-cn-text: #8dc9f5;
-      --site-intl-bg: #262395;
-      --site-intl-text: #b5b0ff;
+      --site-cn-bg: color-mix(in srgb, #38bdf8 11%, transparent);
+      --site-cn-border: color-mix(in srgb, #38bdf8 26%, transparent);
+      --site-cn-text: #7dd3fc;
+      --site-intl-bg: color-mix(in srgb, #a78bfa 12%, transparent);
+      --site-intl-border: color-mix(in srgb, #a78bfa 28%, transparent);
+      --site-intl-text: #c4b5fd;
       --plan-pro-bg: linear-gradient(135deg, #4f3d0b 0%, #6e5510 52%, #8f6d10 100%);
       --plan-pro-border: #e2b432b3;
       --plan-pro-text: #fff0a8;
@@ -260,6 +266,8 @@
       height: 100%;
       margin: 0;
       padding: 0;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
     }
 
     body {
@@ -272,11 +280,18 @@
       -moz-osx-font-smoothing: grayscale;
       transition: background-color var(--dur-theme) ease, color var(--dur-theme) ease;
       overflow-y: scroll;
+      -webkit-overflow-scrolling: touch;
       scrollbar-gutter: stable;
     }
 
     button, input, textarea, select {
       font: inherit;
+      margin: 0;
+    }
+
+    button, label, .cred-card, .cred-list-row, .model-row, .strip-cell.clickable {
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
 
     ::-webkit-scrollbar {
@@ -321,6 +336,8 @@
       pointer-events: none;
       z-index: 0;
       overflow: hidden;
+      transform: translateZ(0);
+      contain: strict;
     }
     .ambient-wash {
       position: absolute;
@@ -354,6 +371,7 @@
       flex-direction: column;
       gap: 16px;
       min-height: 100%;
+      overflow-x: clip;
     }
 
     /* ==========================================================================
@@ -468,6 +486,7 @@
       gap: 2px;
       min-width: 0;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
       margin-bottom: -1px;
     }
@@ -777,8 +796,7 @@
     }
 
     /* ==========================================================================
-       Unified Smooth Horizontal Directional Transitions
-       (Permanent overflow-x: clip + WAAPI compositor glide — zero twitch/ghosting)
+       Page & Content Stages (Instant crisp swaps; gliding sliders live on indicators)
        ========================================================================== */
     .page-transition,
     .slide-stage {
@@ -787,8 +805,6 @@
       flex-direction: column;
       min-width: 0;
       flex: 1 0 auto;
-      overflow-x: hidden;
-      overflow-x: clip;
     }
 
     section.tab-panel {
@@ -797,23 +813,6 @@
       gap: 16px;
       min-width: 0;
     }
-
-    @keyframes slideEnterForward {
-      from { opacity: 0.35; transform: translate3d(12px, 0, 0); }
-      to   { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    @keyframes slideEnterBackward {
-      from { opacity: 0.35; transform: translate3d(-12px, 0, 0); }
-      to   { opacity: 1; transform: translate3d(0, 0, 0); }
-    }
-    @keyframes slideFadeIn {
-      from { opacity: 0.45; }
-      to   { opacity: 1; }
-    }
-
-    .pt-enter-forward  { animation: slideEnterForward  var(--dur-slide) var(--ease-smooth) both; }
-    .pt-enter-backward { animation: slideEnterBackward var(--dur-slide) var(--ease-smooth) both; }
-    .pt-enter-fade     { animation: slideFadeIn        150ms ease-out both; }
 
     /* ==========================================================================
        Overview Telemetry Strip (CPAMC Hero Panel + VaultPulse — replaces old 4 KPI boxes)
@@ -980,31 +979,44 @@
       text-overflow: ellipsis;
     }
 
-    /* Signature CPAMC VaultPulse live credential health strip */
+    /* Credential Pool Status Dots (1 dot per credential, colored by real health) */
     .vault-pulse {
       display: flex;
-      align-items: flex-end;
-      gap: 3px;
-      height: 18px;
-      padding-bottom: 2px;
-      border-bottom: 1px solid color-mix(in srgb, var(--border-color) 85%, transparent);
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      min-height: 20px;
+      padding: 3px 0;
     }
-    .pulse-bar {
-      flex: 1 1 0;
-      min-width: 3px;
-      max-width: 12px;
-      border-radius: 2px 2px 1px 1px;
+    .pulse-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+      transition: opacity 160ms ease, box-shadow 160ms ease;
     }
-    .pulse-live     { background: var(--viz-success); height: 100%; }
-    .pulse-warning  { background: var(--amber-color); height: 70%; }
-    .pulse-problem  { background: var(--viz-failure); height: 55%; }
-    .pulse-disabled { background: var(--text-quaternary); opacity: 0.35; height: 32%; }
+    .pulse-live {
+      background: var(--viz-success);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--viz-success) 18%, transparent);
+    }
+    .pulse-warning {
+      background: var(--amber-color);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--amber-color) 20%, transparent);
+    }
+    .pulse-problem {
+      background: var(--viz-failure);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--viz-failure) 20%, transparent);
+    }
+    .pulse-disabled {
+      background: var(--text-quaternary);
+      opacity: 0.55;
+    }
     .pulse-idle-line {
       flex: 1;
       height: 0;
       border-bottom: 1.5px dashed var(--text-quaternary);
       opacity: 0.6;
-      margin-bottom: 4px;
     }
 
     .cell-inline-actions {
@@ -1054,11 +1066,12 @@
       min-width: 0;
     }
 
-    /* CPAMC Segmented Pill Switch (zero font-weight shift + GPU gliding indicator) */
+    /* CPAMC Segmented Pill Switch (exact 32px height + centered CJK typography + GPU gliding slider) */
     .segmented {
       position: relative;
       display: inline-flex;
-      align-items: center;
+      align-items: stretch;
+      height: 32px;
       gap: 2px;
       padding: 2px;
       border-radius: 9999px;
@@ -1070,10 +1083,10 @@
 
     .segment-indicator {
       position: absolute;
-      top: 2px;
-      bottom: 2px;
+      top: 0;
       left: 0;
       width: 0;
+      height: 0;
       z-index: 0;
       border-radius: 9999px;
       background: var(--floating-surface);
@@ -1098,19 +1111,29 @@
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 5px;
-      padding: 5px 11px;
+      height: 100%;
+      margin: 0;
+      padding: 0 11px;
       border: 0;
       border-radius: 9999px;
       background: transparent;
       color: var(--text-secondary);
       font-size: 12px;
       font-weight: 600;
-      line-height: 1.3;
+      line-height: 1;
       white-space: nowrap;
+      appearance: none;
+      -webkit-appearance: none;
       transition:
         color var(--dur-hover) var(--ease-smooth),
         background-color var(--dur-hover) var(--ease-smooth);
+    }
+    .segment > span {
+      display: inline-flex;
+      align-items: center;
+      line-height: 1;
     }
     .segment:focus-visible {
       outline: 2px solid var(--primary-color);
@@ -1136,6 +1159,7 @@
       font-family: var(--font-mono);
       font-size: 10.5px;
       font-weight: 600;
+      line-height: 1;
       color: var(--text-tertiary);
       font-variant-numeric: tabular-nums;
     }
@@ -1213,6 +1237,8 @@
       grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
       align-items: stretch;
       gap: 14px;
+      border: 0 solid var(--border-color);
+      background: transparent;
     }
 
     /* Open CPAMC QuotaCard (no clunky nested inner box around quota bars!) */
@@ -1255,22 +1281,6 @@
       min-width: 0;
     }
 
-    .site-monogram {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-mono);
-      font-size: 10.5px;
-      font-weight: 750;
-      letter-spacing: 0.02em;
-    }
-    .site-monogram.cn   { background: var(--site-cn-bg);   color: var(--site-cn-text); }
-    .site-monogram.intl { background: var(--site-intl-bg); color: var(--site-intl-text); }
-
     .cred-identity {
       flex: 1;
       min-width: 0;
@@ -1301,7 +1311,9 @@
       color: var(--text-tertiary);
     }
 
-    /* Compact List View (CPAMC PluginRow / AuthFile compact list rhythm) */
+    /* Compact List View (CPAMC PluginRow / AuthFile compact list rhythm)
+       Note: intentionally NO border-color transition here so toggling
+       .credentials-grid <-> .credentials-list never flashes dark currentColor. */
     .credentials-list {
       border: 1px solid var(--border-color);
       background: var(--card-surface);
@@ -1309,11 +1321,10 @@
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: background-color var(--dur-theme) ease, border-color var(--dur-theme) ease;
     }
     .cred-list-row {
       display: grid;
-      grid-template-columns: auto auto minmax(0, 1.35fr) minmax(170px, 1.15fr) auto auto;
+      grid-template-columns: auto minmax(0, 1.35fr) minmax(170px, 1.15fr) auto auto;
       align-items: center;
       gap: 10px 14px;
       padding: 11px 15px;
@@ -1442,11 +1453,17 @@
 
     .badge-cn {
       background: var(--site-cn-bg);
+      border: 1px solid var(--site-cn-border);
       color: var(--site-cn-text);
+      min-width: 44px;
+      justify-content: center;
     }
     .badge-intl {
       background: var(--site-intl-bg);
+      border: 1px solid var(--site-intl-border);
       color: var(--site-intl-text);
+      min-width: 44px;
+      justify-content: center;
     }
     .badge-plan-pro {
       background: var(--plan-pro-bg);
@@ -1632,6 +1649,10 @@
       font-size: 11.5px;
       font-weight: 600;
     }
+    .cred-actions .btn-card-action:last-child {
+      min-width: 56px;
+      justify-content: center;
+    }
 
     /* Frosted Loading Overlay */
     .credentials-loading-overlay {
@@ -1737,24 +1758,22 @@
     }
 
     /* ==========================================================================
-       Floating Glassmorphic Bars (BatchActionBar & FloatingSaveBar)
+       Compact Floating Glassmorphic Pill Bar (BatchActionBar & FloatingSaveBar)
        ========================================================================== */
     .floating-bar-wrap {
       position: fixed;
       left: 50%;
-      bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-      transform: translate3d(-50%, 10px, 0);
+      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      transform: translateX(-50%);
       opacity: 0;
       z-index: 90;
-      width: min(720px, calc(100vw - 24px));
+      width: fit-content;
+      max-width: calc(100vw - 24px);
       pointer-events: none;
-      transition:
-        opacity 220ms var(--ease-smooth),
-        transform 240ms var(--ease-smooth);
+      transition: opacity 200ms var(--ease-fade);
     }
     .floating-bar-wrap.is-visible {
       opacity: 1;
-      transform: translate3d(-50%, 0, 0);
     }
     .floating-bar-wrap:not(.is-visible) .floating-bar {
       pointer-events: none;
@@ -1762,27 +1781,29 @@
 
     .floating-bar {
       pointer-events: auto;
-      display: flex;
-      flex-wrap: wrap;
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px 16px;
-      padding: 9px 14px;
-      border-radius: 16px;
+      justify-content: center;
+      gap: 10px;
+      padding: 6px 8px 6px 14px;
+      border-radius: 9999px;
       border: 1px solid var(--glass-border);
       background: var(--glass-bg);
       backdrop-filter: var(--glass-backdrop-filter);
       -webkit-backdrop-filter: var(--glass-backdrop-filter);
-      box-shadow: var(--shadow-lg), var(--shadow);
+      box-shadow: var(--floating-shadow), var(--shadow);
     }
 
     .floating-bar-status {
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
       font-variant-numeric: tabular-nums;
       color: var(--text-secondary);
-      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px;
     }
     .floating-bar-status.is-warning { color: var(--amber-text); }
     .floating-bar-status.is-error   { color: var(--viz-failure); }
@@ -1790,10 +1811,11 @@
     .floating-bar-status.is-strong  { color: var(--text-primary); }
 
     .floating-bar-actions {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      flex-wrap: wrap;
       gap: 6px;
+      padding-left: 10px;
+      border-left: 1px solid color-mix(in srgb, var(--border-color) 85%, transparent);
       flex-shrink: 0;
     }
 
@@ -1855,6 +1877,7 @@
 
     .usage-table-wrap {
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
       min-width: 0;
     }
     .usage-table-wrap.usage-events-scroll {
@@ -1872,16 +1895,19 @@
     .usage-table th,
     .usage-table td {
       text-align: left;
-      padding: 9px 10px;
+      vertical-align: middle;
+      padding: 10px 12px;
       border-bottom: 1px solid color-mix(in srgb, var(--border-color) 75%, transparent);
       white-space: nowrap;
+      line-height: 1.4;
     }
 
     .usage-table thead th {
       color: var(--text-tertiary);
-      font-size: 11px;
-      font-weight: 650;
-      letter-spacing: 0.03em;
+      font-family: var(--font-sans);
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
       background: var(--bg-primary);
       position: sticky;
       top: 0;
@@ -1900,14 +1926,45 @@
       border-bottom: 0;
     }
 
-    .usage-table td.num,
-    .usage-table th.num {
-      text-align: right;
+    .usage-table th.col-left,
+    .usage-table td.col-left {
+      text-align: left;
+    }
+
+    .usage-table th.col-center,
+    .usage-table td.col-center,
+    .usage-table th.col-num,
+    .usage-table td.col-num {
+      text-align: center;
+    }
+
+    .usage-table td.col-num {
       font-family: var(--font-mono);
       font-size: 12px;
+      color: var(--text-primary);
+    }
+
+    .usage-table td.col-muted {
+      color: var(--text-tertiary);
     }
 
     .usage-table td.mono-cell {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+
+    .token-share-cell {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      vertical-align: middle;
+    }
+    .token-share-val {
+      display: inline-block;
+      min-width: 46px;
+      text-align: right;
       font-family: var(--font-mono);
       font-size: 12px;
       color: var(--text-primary);
@@ -1920,8 +1977,7 @@
       border-radius: 9999px;
       background: color-mix(in srgb, var(--text-primary) 8%, transparent);
       overflow: hidden;
-      vertical-align: middle;
-      margin-right: 8px;
+      flex-shrink: 0;
     }
     .inline-share-fill {
       display: block;
@@ -2144,25 +2200,43 @@
 
     .toggle-switch {
       position: relative;
-      display: inline-flex;
-      align-items: center;
+      display: inline-block;
       width: 44px;
       height: 24px;
       flex-shrink: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      background: transparent;
       cursor: pointer;
+      vertical-align: middle;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
       position: absolute;
+      opacity: 0;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      pointer-events: none;
+      clip-path: inset(50%);
     }
     .toggle-slider {
       position: absolute;
-      inset: 0;
-      border-radius: 9999px;
+      top: 0;
+      left: 0;
+      width: 44px;
+      height: 24px;
+      display: block;
+      border-radius: 12px;
+      overflow: hidden;
       background: var(--border-primary);
-      transition: background-color 220ms var(--ease-smooth);
+      transition: background-color 220ms var(--ease-smooth), box-shadow 180ms ease;
     }
     .toggle-slider::before {
       content: "";
@@ -2171,9 +2245,9 @@
       height: 18px;
       top: 3px;
       left: 3px;
-      border-radius: 9999px;
+      border-radius: 50%;
       background: #ffffff;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
       transform: translate3d(0, 0, 0);
       transition: transform 220ms var(--ease-smooth), background-color 220ms var(--ease-smooth);
     }
@@ -2185,8 +2259,8 @@
       transform: translate3d(20px, 0, 0);
     }
     .toggle-switch input:focus-visible + .toggle-slider {
-      outline: 2px solid var(--primary-color);
-      outline-offset: 2px;
+      outline: none;
+      box-shadow: 0 0 0 2px var(--bg-primary), 0 0 0 4px var(--primary-color);
     }
 
     /* ==========================================================================
@@ -2222,16 +2296,16 @@
       flex-direction: column;
       overflow: hidden;
       opacity: 0;
-      transform: translate3d(0, 10px, 0);
+      transform: scale(0.985);
       transition:
-        opacity 220ms var(--ease-smooth),
-        transform 240ms var(--ease-smooth),
+        opacity 180ms var(--ease-fade),
+        transform 200ms var(--ease-smooth),
         background-color var(--dur-theme) ease,
         border-color var(--dur-theme) ease;
     }
     .modal-backdrop.is-open .modal {
       opacity: 1;
-      transform: translate3d(0, 0, 0);
+      transform: scale(1);
     }
     .modal.modal-wide {
       width: min(760px, 100%);
@@ -2679,31 +2753,61 @@
         grid-template-columns: minmax(0, 1fr);
       }
       .cred-list-row {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
         align-items: center;
-        gap: 10px 12px;
+        gap: 10px 10px;
+      }
+      .cred-list-row .transfer-select-hit {
+        grid-column: 1;
+        grid-row: 1;
       }
       .cred-list-row .cred-identity {
-        flex: 1 1 180px;
+        grid-column: 2 / -1;
+        grid-row: 1;
+        min-width: 0;
       }
       .cred-list-row .cred-list-meter {
-        flex: 1 0 100%;
-        order: 3;
+        grid-column: 1 / -1;
+        grid-row: 2;
       }
       .cred-list-row .cred-list-daily {
-        order: 4;
+        grid-column: 1 / 3;
+        grid-row: 3;
+        justify-self: start;
       }
       .cred-list-row .cred-actions {
-        order: 5;
-        margin-left: auto;
+        grid-column: 3;
+        grid-row: 3;
+        justify-self: end;
       }
     }
 
     @media (max-width: 768px) {
+      .ambient-grid {
+        display: none;
+      }
       .page-shell {
         padding: 16px 14px 88px;
         gap: 14px;
+      }
+      .cred-card {
+        padding: 13px 14px;
+      }
+      .cred-list-row {
+        padding: 12px 14px;
+      }
+      .cred-reason-msg {
+        display: none;
+      }
+      .tab {
+        padding: 8px 6px 10px;
+        font-size: 12px;
+        gap: 4px;
+      }
+      .tab .tab-icon {
+        width: 13px;
+        height: 13px;
       }
       html.in-cpa-host .masthead-top {
         padding-right: 0;
@@ -2741,17 +2845,19 @@
         flex: 1 1 180px;
       }
       .floating-bar-wrap {
-        width: calc(100vw - 16px);
+        max-width: calc(100vw - 20px);
       }
       .floating-bar {
-        flex-direction: column;
-        align-items: stretch;
+        padding: 5px 7px 5px 12px;
+        gap: 8px;
+      }
+      .floating-bar-status {
+        font-size: 11px;
+        max-width: 140px;
       }
       .floating-bar-actions {
-        justify-content: stretch;
-      }
-      .floating-bar-actions .btn {
-        flex: 1;
+        padding-left: 8px;
+        gap: 5px;
       }
       .modal-backdrop {
         padding: 14px;
@@ -2958,11 +3064,11 @@
                 <span id="siteCntAll" class="segment-count">0</span>
               </button>
               <button type="button" class="segment" data-site="workbuddy" onclick="selectSiteFilter('workbuddy')" role="tab" aria-selected="false">
-                <span>国内 CN</span>
+                <span>国内</span>
                 <span id="siteCntCn" class="segment-count">0</span>
               </button>
               <button type="button" class="segment" data-site="workbuddy-ai" onclick="selectSiteFilter('workbuddy-ai')" role="tab" aria-selected="false">
-                <span>国际 AI</span>
+                <span>国际</span>
                 <span id="siteCntIntl" class="segment-count">0</span>
               </button>
             </div>
@@ -3267,31 +3373,31 @@
       </section>
     </div>
 
-    <!-- Floating Batch Action Bar (outside transformed page stage) -->
+    <!-- Floating Batch Action Bar (outside page stage) -->
     <div id="batchSelectionBar" class="floating-bar-wrap" hidden>
       <div class="floating-bar">
-        <span id="batchSelectionCount" class="floating-bar-status is-strong">已选择 0 个账号</span>
+        <span id="batchSelectionCount" class="floating-bar-status is-strong">已选 0 个</span>
         <div class="floating-bar-actions">
-          <button type="button" class="btn btn-ghost" onclick="clearTransferSelection()">取消选择</button>
-          <button type="button" id="btnBatchExport" class="btn btn-primary" onclick="exportSelectedAccounts()">
-            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <button type="button" class="btn btn-ghost btn-sm" onclick="clearTransferSelection()">取消</button>
+          <button type="button" id="btnBatchExport" class="btn btn-primary btn-sm" onclick="exportSelectedAccounts()">
+            <svg class="icon icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
               <polyline points="7 10 12 15 17 10"/>
               <line x1="12" y1="15" x2="12" y2="3"/>
             </svg>
-            <span>导出选中 JSON</span>
+            <span>导出 JSON</span>
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Floating Config Save Bar (outside transformed page stage) -->
+    <!-- Floating Config Save Bar (outside page stage) -->
     <div id="configSaveBar" class="floating-bar-wrap" hidden>
       <div class="floating-bar">
-        <span id="configSaveStatus" class="floating-bar-status">当前配置已同步</span>
+        <span id="configSaveStatus" class="floating-bar-status">配置已同步</span>
         <div class="floating-bar-actions">
-          <button type="button" id="btnResetConfig" class="btn btn-ghost" onclick="resetConfigForm()" disabled>重置更改</button>
-          <button type="button" id="btnSaveConfig" class="btn btn-primary" onclick="saveConfig()" disabled>保存并生效</button>
+          <button type="button" id="btnResetConfig" class="btn btn-ghost btn-sm" onclick="resetConfigForm()" disabled>重置</button>
+          <button type="button" id="btnSaveConfig" class="btn btn-primary btn-sm" onclick="saveConfig()" disabled>保存并生效</button>
         </div>
       </div>
     </div>
@@ -3492,12 +3598,7 @@
       inbox: '<svg class="icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>'
     };
 
-    const PT_CLASSES = ["pt-enter-forward", "pt-enter-backward", "pt-enter-fade"];
-    const TAB_ORDER = { overview: 0, usage: 1, config: 2 };
     const TAB_PANEL_IDS = { overview: "panelOverview", usage: "panelUsage", config: "panelConfig" };
-    const SITE_ORDER = { all: 0, workbuddy: 1, "workbuddy-ai": 2 };
-    const VIEW_ORDER = { cards: 0, list: 1 };
-    const MODEL_TIER_ORDER = { all: 0, free: 1, paid: 2 };
 
     let currentTabId = "overview";
     let siteFilter = "all";
@@ -3520,8 +3621,6 @@
     let activeBatchOp = null;
     let activeTransferOp = null;
     let lastToolbarCounts = { cnCount: 0, cnPending: 0, intlCount: 0, intlPending: 0 };
-    const slideTimers = new Map();
-    const activeSlideAnims = new Map();
     const visibilityTimers = new Map();
     let usageRefreshTimer = null;
 
@@ -3545,17 +3644,25 @@
       const indicator = el("tabIndicator");
       if (!strip || !indicator) return;
       const active = strip.querySelector(".tab.active");
-      if (!active || !active.offsetWidth) return;
-      const x = active.offsetLeft + 10;
-      const w = Math.max(0, active.offsetWidth - 20);
+      if (!active) return;
+      const activeRect = active.getBoundingClientRect();
+      if (!activeRect.width) return;
+      const stripRect = strip.getBoundingClientRect();
+      const pad = window.innerWidth <= 768 ? 6 : 10;
+      const x = (activeRect.left - stripRect.left) + strip.scrollLeft + pad;
+      const w = Math.max(0, activeRect.width - pad * 2);
       if (instant) indicator.classList.add("no-transition");
       else indicator.classList.remove("no-transition");
-      indicator.style.transform = `translate3d(${x}px, 0, 0)`;
-      indicator.style.width = `${w}px`;
+      indicator.style.transform = `translate3d(${x.toFixed(2)}px, 0, 0)`;
+      indicator.style.width = `${w.toFixed(2)}px`;
       indicator.style.opacity = "1";
       strip.classList.add("has-indicator");
       if (instant) {
         nextPaint(() => indicator.classList.remove("no-transition"));
+      } else if (strip.scrollWidth > strip.clientWidth && typeof active.scrollIntoView === "function") {
+        try {
+          active.scrollIntoView({ behavior: prefersReducedMotion() ? "auto" : "smooth", inline: "nearest", block: "nearest" });
+        } catch (_) {}
       }
     }
 
@@ -3563,11 +3670,17 @@
       if (!groupEl) return;
       const indicator = groupEl.querySelector(".segment-indicator");
       const active = groupEl.querySelector(".segment.active");
-      if (!indicator || !active || !active.offsetWidth) return;
+      if (!indicator || !active) return;
+      const activeRect = active.getBoundingClientRect();
+      if (!activeRect.width || !activeRect.height) return;
+      const groupRect = groupEl.getBoundingClientRect();
+      const x = activeRect.left - groupRect.left - groupEl.clientLeft;
+      const y = activeRect.top - groupRect.top - groupEl.clientTop;
       if (instant) indicator.classList.add("no-transition");
       else indicator.classList.remove("no-transition");
-      indicator.style.transform = `translate3d(${active.offsetLeft}px, 0, 0)`;
-      indicator.style.width = `${active.offsetWidth}px`;
+      indicator.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)`;
+      indicator.style.width = `${activeRect.width.toFixed(2)}px`;
+      indicator.style.height = `${activeRect.height.toFixed(2)}px`;
       indicator.style.opacity = "1";
       groupEl.classList.add("has-indicator");
       if (instant) {
@@ -3583,54 +3696,6 @@
       if (modelsModal && !modelsModal.hidden) {
         syncSegmentedIndicator(el("modelTierSegmented"), instant);
       }
-    }
-
-    // Unified silky WAAPI horizontal glide (zero forced reflow, zero blank flash, zero ghosting)
-    function playDirectionalSlide(targetEl, forward) {
-      if (!targetEl) return;
-      const key = targetEl.id || "default";
-      const prevAnim = activeSlideAnims.get(key);
-      if (prevAnim) {
-        try { prevAnim.cancel(); } catch (_) {}
-        activeSlideAnims.delete(key);
-      }
-      if (slideTimers.has(key)) {
-        clearTimeout(slideTimers.get(key));
-        slideTimers.delete(key);
-      }
-
-      const reduced = prefersReducedMotion();
-      const dx = forward ? 12 : -12;
-
-      if (typeof targetEl.animate === "function") {
-        const keyframes = reduced
-          ? [{ opacity: 0.45 }, { opacity: 1 }]
-          : [
-              { opacity: 0.35, transform: `translate3d(${dx}px, 0, 0)` },
-              { opacity: 1, transform: "translate3d(0, 0, 0)" }
-            ];
-        const anim = targetEl.animate(keyframes, {
-          duration: reduced ? 150 : 250,
-          easing: "cubic-bezier(0.25, 1, 0.5, 1)"
-        });
-        activeSlideAnims.set(key, anim);
-        const cleanup = () => {
-          if (activeSlideAnims.get(key) === anim) activeSlideAnims.delete(key);
-        };
-        anim.onfinish = cleanup;
-        anim.oncancel = cleanup;
-        return;
-      }
-
-      targetEl.classList.remove(...PT_CLASSES);
-      const cls = reduced ? "pt-enter-fade" : (forward ? "pt-enter-forward" : "pt-enter-backward");
-      targetEl.classList.add(cls);
-      const ms = reduced ? 160 : 260;
-      const timer = setTimeout(() => {
-        targetEl.classList.remove(...PT_CLASSES);
-        slideTimers.delete(key);
-      }, ms);
-      slideTimers.set(key, timer);
     }
 
     // ---- Smooth Modal & Floating Bar Helpers ----
@@ -3780,7 +3845,7 @@
       const batchExport = el("btnBatchExport");
       setFloatingBarVisible(batchBar, currentTabId === "overview" && selected > 0);
       if (batchCount) {
-        batchCount.textContent = `已选择 ${selected} / ${total} 个账号`;
+        batchCount.textContent = `已选 ${selected} / ${total}`;
       }
       if (batchExport) {
         batchExport.disabled = busy || !hasData || selected === 0;
@@ -4174,25 +4239,70 @@
       if (e.key === "Enter") submitManualKey();
     });
 
-    // ---- Account masking ----
-    function maskPart(value) {
-      const chars = Array.from(String(value || ""));
+    // ---- Account masking (Truly masks actual display names & emails, never leaks rightmost name) ----
+    function maskPlainToken(value) {
+      const s = String(value || "").trim();
+      if (!s || s.includes("***")) return s;
+      const chars = Array.from(s);
       const len = chars.length;
-      if (len === 0) return "";
-      if (len <= 2) return chars[0] + "***";
-      if (len <= 5) return chars[0] + "***" + chars[len - 1];
-      if (len <= 8) return chars.slice(0, 2).join("") + "***" + chars.slice(-2).join("");
-      if (len <= 11) return chars.slice(0, 3).join("") + "***" + chars.slice(-3).join("");
-      return chars.slice(0, 4).join("") + "***" + chars.slice(-4).join("");
+      if (len === 1) return "*";
+      if (len === 2) return chars[0] + "*";
+      if (len === 3) return chars[0] + "**";
+      if (len <= 6 || /[\u3400-\u9fff\s]/.test(s)) return chars[0] + "***";
+      return chars.slice(0, 2).join("") + "****";
+    }
+
+    function maskEmailToken(value) {
+      const s = String(value || "").trim();
+      const at = s.lastIndexOf("@");
+      if (at <= 0 || at >= s.length - 1) return maskPlainToken(s);
+      const local = maskPlainToken(s.slice(0, at));
+      const domain = s.slice(at + 1);
+      const dot = domain.lastIndexOf(".");
+      if (dot > 0 && dot < domain.length - 1) {
+        const host = domain.slice(0, dot);
+        const tld = domain.slice(dot);
+        return local + "@" + maskPlainToken(host) + tld;
+      }
+      return local + "@" + maskPlainToken(domain);
+    }
+
+    function maskSensitiveSegment(seg) {
+      const clean = String(seg || "").trim();
+      if (!clean) return "";
+      if (clean.includes("@")) return maskEmailToken(clean);
+      return maskPlainToken(clean);
+    }
+
+    function formatEnterpriseId(value) {
+      const s = String(value == null ? "" : value).trim();
+      if (!s) return "";
+      return accountMaskingEnabled ? maskPlainToken(s) : s;
     }
 
     function formatAccountName(value) {
       const s = String(value == null ? "" : value).trim();
       if (!s) return "--";
       if (!accountMaskingEnabled) return s;
-      const at = s.lastIndexOf("@");
-      if (at > 0 && at < s.length - 1) return maskPart(s.slice(0, at)) + s.slice(at);
-      return maskPart(s);
+
+      // Backend labels follow "<SiteName> · <DisplayName>" (e.g. "WorkBuddy国内 · 张三")
+      if (s.includes("·")) {
+        const parts = s.split(/\s*·\s*/).filter(Boolean);
+        if (parts.length > 1) {
+          const isSitePrefix = /^workbuddy(?:\s*(?:国内|国际|ai|cn))?$/i.test(parts[0]);
+          return parts
+            .map((part, idx) => (idx === 0 && isSitePrefix ? part : maskSensitiveSegment(part)))
+            .join(" · ");
+        }
+      }
+
+      // Readable credential file names like "WorkBuddy国内-张三-1a2b3c4d.json"
+      const filePrefixMatch = /^(WorkBuddy(?:国内|国际)?)(?:[-\s]+)(.+?)(?:\.json)?$/i.exec(s);
+      if (filePrefixMatch) {
+        return filePrefixMatch[1] + " · " + maskSensitiveSegment(filePrefixMatch[2]);
+      }
+
+      return maskSensitiveSegment(s);
     }
 
     function updateMaskButton() {
@@ -4209,6 +4319,9 @@
       updateMaskButton();
       renderDashboard();
       if (lastUsageData) renderUsageStats(lastUsageData);
+      if (currentModelsData && el("modelsModal") && !el("modelsModal").hidden) {
+        el("modelsModalTitle").textContent = formatAccountName(currentModelsData.label || currentModelsData.auth_index);
+      }
     }
 
     // ---- API Fetch ----
@@ -4240,7 +4353,7 @@
       return data || {};
     }
 
-    // ---- Tabs, Site Filter & View Mode (Silky gliding indicators + WAAPI slide) ----
+    // ---- Tabs, Site Filter & View Mode (Gliding indicator sliders + instant crisp content swap) ----
     function switchTab(tabId) {
       if (!TAB_PANEL_IDS[tabId]) return;
       document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tabId));
@@ -4256,18 +4369,11 @@
         usageRefreshTimer = null;
       }
 
-      const prevTabId = currentTabId;
       currentTabId = tabId;
       Object.entries(TAB_PANEL_IDS).forEach(([k, id]) => {
         const p = el(id);
-        if (p) {
-          p.classList.remove(...PT_CLASSES);
-          p.hidden = k !== tabId;
-        }
+        if (p) p.hidden = k !== tabId;
       });
-
-      const forward = (TAB_ORDER[tabId] || 0) >= (TAB_ORDER[prevTabId] || 0);
-      playDirectionalSlide(el(TAB_PANEL_IDS[tabId]), forward);
 
       updateFloatingBarsVisibility();
       if (tabId === "overview") {
@@ -4278,7 +4384,7 @@
           usageRefreshTimer = setTimeout(() => {
             usageRefreshTimer = null;
             if (currentTabId === "usage") loadUsageStats(false, true);
-          }, 270);
+          }, 340);
         } else {
           loadUsageStats(false, true);
         }
@@ -4287,7 +4393,6 @@
 
     function selectSiteFilter(value) {
       if (siteFilter === value) return;
-      const forward = (SITE_ORDER[value] || 0) >= (SITE_ORDER[siteFilter] || 0);
       siteFilter = value;
       document.querySelectorAll("[data-site]").forEach(btn => {
         const active = btn.getAttribute("data-site") === value;
@@ -4296,7 +4401,6 @@
       });
       syncSegmentedIndicator(el("siteSegmented"), false);
       renderCredentialsList();
-      playDirectionalSlide(el("credentialsContainer"), forward);
     }
 
     function applyViewModeButtons(instant) {
@@ -4311,12 +4415,10 @@
     function selectViewMode(mode) {
       if (mode !== "cards" && mode !== "list") return;
       if (viewMode === mode) return;
-      const forward = (VIEW_ORDER[mode] || 0) >= (VIEW_ORDER[viewMode] || 0);
       viewMode = mode;
       try { localStorage.setItem(VIEW_STORAGE_KEY, mode); } catch (_) {}
       applyViewModeButtons(false);
       renderCredentialsList();
-      playDirectionalSlide(el("credentialsContainer"), forward);
     }
 
     function onAccountSearchInput() {
@@ -4384,7 +4486,7 @@
 
     function makeSiteBadge(site) {
       const isIntl = site === "workbuddy-ai";
-      return makeBadge(isIntl ? "国际 AI" : "国内 CN", isIntl ? "badge-intl" : "badge-cn");
+      return makeBadge(isIntl ? "国际" : "国内", isIntl ? "badge-intl" : "badge-cn");
     }
 
     function makeRateBadge(isFree, factor) {
@@ -4450,25 +4552,26 @@
         tbl.className = "usage-table";
         tbl.innerHTML =
           "<thead><tr>" +
-          "<th>模型</th><th>站点</th><th class='num'>积分倍率</th>" +
-          "<th class='num'>请求数</th><th class='num'>成功 / 失败</th>" +
-          "<th class='num'>输入 Token</th><th class='num'>输出 Token</th><th class='num'>总 Token</th><th>最近使用</th>" +
+          "<th class='col-left'>模型</th><th class='col-center'>站点</th><th class='col-center'>积分倍率</th>" +
+          "<th class='col-num'>请求数</th><th class='col-num'>成功 / 失败</th>" +
+          "<th class='col-num'>输入 Token</th><th class='col-num'>输出 Token</th><th class='col-center'>总 Token</th><th class='col-num'>最近使用</th>" +
           "</tr></thead><tbody></tbody>";
         const tbody = tbl.querySelector("tbody");
         models.forEach(m => {
           const tr = document.createElement("tr");
 
           const tdName = document.createElement("td");
-          tdName.className = "mono-cell";
+          tdName.className = "col-left mono-cell";
           tdName.textContent = m.display_name || m.model;
           tr.appendChild(tdName);
 
           const tdSite = document.createElement("td");
+          tdSite.className = "col-center";
           tdSite.appendChild(makeSiteBadge(m.site));
           tr.appendChild(tdSite);
 
           const tdRate = document.createElement("td");
-          tdRate.className = "num";
+          tdRate.className = "col-center";
           tdRate.appendChild(makeRateBadge(m.is_free, m.credit_factor));
           tr.appendChild(tdRate);
 
@@ -4479,13 +4582,15 @@
             formatTokens(m.output_tokens || 0)
           ].forEach(txt => {
             const td = document.createElement("td");
-            td.className = "num";
+            td.className = "col-num";
             td.textContent = txt;
             tr.appendChild(td);
           });
 
           const tdTot = document.createElement("td");
-          tdTot.className = "num";
+          tdTot.className = "col-center";
+          const shareCell = document.createElement("span");
+          shareCell.className = "token-share-cell";
           const shareBar = document.createElement("span");
           shareBar.className = "inline-share-bar";
           const shareFill = document.createElement("span");
@@ -4493,13 +4598,14 @@
           shareFill.style.width = Math.max(4, Math.round((Number(m.total_tokens || 0) / maxTok) * 100)) + "%";
           shareBar.appendChild(shareFill);
           const totTxt = document.createElement("span");
+          totTxt.className = "token-share-val";
           totTxt.textContent = formatTokens(m.total_tokens || 0);
-          tdTot.append(shareBar, totTxt);
+          shareCell.append(shareBar, totTxt);
+          tdTot.appendChild(shareCell);
           tr.appendChild(tdTot);
 
           const tdLast = document.createElement("td");
-          tdLast.style.fontFamily = "var(--font-mono)";
-          tdLast.style.color = "var(--text-tertiary)";
+          tdLast.className = "col-num col-muted";
           tdLast.textContent = m.last_used_at ? new Date(m.last_used_at).toLocaleTimeString("zh-CN", { hour12: false }) : "-";
           tr.appendChild(tdLast);
 
@@ -4520,9 +4626,9 @@
         tbl.className = "usage-table";
         tbl.innerHTML =
           "<thead><tr>" +
-          "<th>账号</th><th>站点</th><th>套餐</th>" +
-          "<th class='num'>已用积分</th><th class='num'>剩余积分</th><th class='num'>总积分</th>" +
-          "<th class='num'>即将过期</th><th class='num'>请求数</th><th class='num'>Token</th><th>资源包</th>" +
+          "<th class='col-left'>账号</th><th class='col-center'>站点</th><th class='col-center'>套餐</th>" +
+          "<th class='col-num'>已用积分</th><th class='col-num'>剩余积分</th><th class='col-num'>总积分</th>" +
+          "<th class='col-num'>即将过期</th><th class='col-num'>请求数</th><th class='col-num'>Token</th><th class='col-center'>资源包</th>" +
           "</tr></thead><tbody></tbody>";
         const tbody = tbl.querySelector("tbody");
         accounts.forEach(a => {
@@ -4531,15 +4637,17 @@
           const pkgCount = (q.packages || []).length;
 
           const tdAcc = document.createElement("td");
-          tdAcc.className = "mono-cell";
+          tdAcc.className = "col-left mono-cell";
           tdAcc.textContent = formatAccountName(a.label || a.auth_index);
           tr.appendChild(tdAcc);
 
           const tdSite = document.createElement("td");
+          tdSite.className = "col-center";
           tdSite.appendChild(makeSiteBadge(a.site));
           tr.appendChild(tdSite);
 
           const tdPlan = document.createElement("td");
+          tdPlan.className = "col-center";
           const planLabel = a.plan_name || (a.is_paid ? "Paid" : "Free");
           const isPro = a.is_paid || /pro|plus|enterprise|vip/i.test(planLabel);
           tdPlan.appendChild(makeBadge(planLabel, isPro ? "badge-plan-pro" : "badge-plan-free"));
@@ -4554,13 +4662,13 @@
             formatTokens(a.total_tokens || 0)
           ].forEach(txt => {
             const td = document.createElement("td");
-            td.className = "num";
+            td.className = "col-num";
             td.textContent = txt;
             tr.appendChild(td);
           });
 
           const tdPkg = document.createElement("td");
-          tdPkg.style.color = "var(--text-secondary)";
+          tdPkg.className = "col-center col-muted";
           tdPkg.textContent = pkgCount > 0 ? pkgCount + " 个资源包" : "-";
           tr.appendChild(tdPkg);
 
@@ -4581,8 +4689,8 @@
         tbl.className = "usage-table";
         tbl.innerHTML =
           "<thead><tr>" +
-          "<th>时间</th><th>账号</th><th>模型</th><th class='num'>倍率</th>" +
-          "<th class='num'>Token</th><th class='num'>耗时</th><th>状态</th>" +
+          "<th class='col-num'>时间</th><th class='col-left'>账号</th><th class='col-left'>模型</th><th class='col-center'>倍率</th>" +
+          "<th class='col-num'>Token</th><th class='col-num'>耗时</th><th class='col-center'>状态</th>" +
           "</tr></thead><tbody></tbody>";
         const tbody = tbl.querySelector("tbody");
         events.slice(0, 30).forEach(ev => {
@@ -4590,37 +4698,37 @@
           const u = ev.usage || {};
 
           const tdTime = document.createElement("td");
-          tdTime.style.fontFamily = "var(--font-mono)";
-          tdTime.style.color = "var(--text-tertiary)";
+          tdTime.className = "col-num col-muted";
           tdTime.textContent = ev.timestamp ? new Date(ev.timestamp).toLocaleTimeString("zh-CN", { hour12: false }) : "-";
           tr.appendChild(tdTime);
 
           const tdAcc = document.createElement("td");
-          tdAcc.className = "mono-cell";
+          tdAcc.className = "col-left mono-cell";
           tdAcc.textContent = formatAccountName(ev.account_label || ev.auth_index || "-");
           tr.appendChild(tdAcc);
 
           const tdModel = document.createElement("td");
-          tdModel.className = "mono-cell";
+          tdModel.className = "col-left mono-cell";
           tdModel.textContent = ev.model || "-";
           tr.appendChild(tdModel);
 
           const tdRate = document.createElement("td");
-          tdRate.className = "num";
+          tdRate.className = "col-center";
           tdRate.appendChild(makeRateBadge(ev.is_free, ev.credit_factor));
           tr.appendChild(tdRate);
 
           const tdTok = document.createElement("td");
-          tdTok.className = "num";
+          tdTok.className = "col-num";
           tdTok.textContent = formatTokens(u.total_tokens || 0);
           tr.appendChild(tdTok);
 
           const tdDur = document.createElement("td");
-          tdDur.className = "num";
+          tdDur.className = "col-num";
           tdDur.textContent = (ev.duration_ms || 0) + " ms";
           tr.appendChild(tdDur);
 
           const tdStatus = document.createElement("td");
+          tdStatus.className = "col-center";
           const ok = ev.status === "success";
           tdStatus.appendChild(makeBadge(ok ? "成功" : "失败", ok ? "badge-success" : "badge-danger", true));
           tr.appendChild(tdStatus);
@@ -4705,6 +4813,40 @@
       }
     }
 
+    function evaluateCredentialHealth(acc) {
+      if (!acc) return { cls: "pulse-disabled", label: "未知" };
+      if (acc.disabled) return { cls: "pulse-disabled", label: "已禁用" };
+      const statusText = String(acc.status || "").trim().toLowerCase();
+      if (acc.unavailable || /^(error|invalid|revoked|banned|failed|unavailable)$/.test(statusText)) {
+        return { cls: "pulse-problem", label: "不可用" };
+      }
+      if (acc.error) {
+        return { cls: "pulse-problem", label: "异常" };
+      }
+      const q = acc.quota;
+      const hasQuota = Boolean(q && Number(q.total || 0) > 0);
+      const pct = hasQuota ? Math.max(0, Math.min(100, (Number(q.remaining || 0) / Number(q.total)) * 100)) : null;
+      if (hasQuota && Number(q.remaining || 0) <= 0) {
+        return { cls: "pulse-problem", label: "额度耗尽 (0%)" };
+      }
+      if (hasQuota && pct <= 10) {
+        return { cls: "pulse-problem", label: `额度极低 (${pct.toFixed(0)}%)` };
+      }
+      if (acc.token_expired) {
+        return { cls: "pulse-warning", label: "Token 过期" };
+      }
+      if (/^(cooling|cooldown|rate_limited|warning|expired)$/.test(statusText)) {
+        return { cls: "pulse-warning", label: "受限/警告" };
+      }
+      if (hasQuota && pct <= 30) {
+        return { cls: "pulse-warning", label: `额度偏低 (${pct.toFixed(0)}%)` };
+      }
+      return {
+        cls: "pulse-live",
+        label: hasQuota ? `正常 (剩余 ${pct.toFixed(0)}%)` : "正常"
+      };
+    }
+
     function renderVaultPulse(accounts) {
       const host = el("vaultPulse");
       if (!host) return;
@@ -4715,14 +4857,15 @@
         host.appendChild(line);
         return;
       }
-      accounts.slice(0, 32).forEach(acc => {
-        const bar = document.createElement("span");
-        let cls = "pulse-live";
-        if (acc.disabled) cls = "pulse-disabled";
-        else if (acc.unavailable || (acc.error && !acc.quota)) cls = "pulse-problem";
-        else if (acc.token_expired) cls = "pulse-warning";
-        bar.className = "pulse-bar " + cls;
-        host.appendChild(bar);
+      accounts.forEach(acc => {
+        const health = evaluateCredentialHealth(acc);
+        const dot = document.createElement("span");
+        dot.className = "pulse-dot " + health.cls;
+        const name = formatAccountName(acc.label || acc.name || acc.id || acc.auth_index);
+        const tip = `${name} · ${health.label}`;
+        dot.title = tip;
+        dot.setAttribute("aria-label", tip);
+        host.appendChild(dot);
       });
     }
 
@@ -4814,13 +4957,13 @@
       const statusEl = el("configSaveStatus");
       if (statusEl) {
         if (!validTime) {
-          statusEl.textContent = "基准时间格式无效，请修正后再保存";
+          statusEl.textContent = "时间格式无效";
           statusEl.className = "floating-bar-status is-error";
         } else if (dirty) {
-          statusEl.textContent = "检测到未保存的配置更改";
+          statusEl.textContent = "有未保存更改";
           statusEl.className = "floating-bar-status is-warning";
         } else {
-          statusEl.textContent = "当前配置已同步";
+          statusEl.textContent = "配置已同步";
           statusEl.className = "floating-bar-status";
         }
       }
@@ -4870,7 +5013,7 @@
       const statusEl = el("configSaveStatus");
       btn.disabled = true;
       if (statusEl) {
-        statusEl.textContent = "正在保存配置...";
+        statusEl.textContent = "保存中...";
         statusEl.className = "floating-bar-status";
       }
       try {
@@ -4891,7 +5034,7 @@
         await loadDashboard(false);
         showToast("配置已保存并同步生效", "success");
         if (statusEl) {
-          statusEl.textContent = "配置已保存并生效";
+          statusEl.textContent = "已保存生效";
           statusEl.className = "floating-bar-status is-ok";
         }
       } catch (err) {
@@ -4954,7 +5097,11 @@
     function buildAccountStatusBadge(acc) {
       if (acc.disabled) return makeBadge("已禁用", "badge-subtle", true);
       if (acc.unavailable) return makeBadge("不可用", "badge-danger", true);
+      if (acc.error && !acc.quota) return makeBadge("异常", "badge-danger", true);
       if (acc.token_expired) return makeBadge("Token 过期", "badge-warning", true);
+      if (acc.quota && Number(acc.quota.total || 0) > 0 && Number(acc.quota.remaining || 0) <= 0) {
+        return makeBadge("额度耗尽", "badge-danger", true);
+      }
       return makeBadge("正常", "badge-success", true);
     }
 
@@ -4977,23 +5124,17 @@
       const completedToday = isDailyCompleted(acc);
       const card = document.createElement("div");
       card.className = "cred-card" + (acc.disabled ? " cred-card-disabled" : "");
+      card.dataset.authIndex = acc.auth_index || acc.id || "";
       card.title = "点击查看该账号的模型列表与消耗倍率";
       card.onclick = (e) => {
         if (e.target && e.target.closest("button, label.transfer-select-hit, input")) return;
         openModelsModal(acc);
       };
 
-      // Head: Checkbox + Monogram + Account Identity + Status
+      // Head: Checkbox + Account Identity + Status
       const head = document.createElement("div");
       head.className = "cred-head";
       head.appendChild(buildSelectCheckbox(acc, checkedAuthIndexes));
-
-      const mono = document.createElement("span");
-      const isIntl = acc.site === "workbuddy-ai";
-      mono.className = "site-monogram " + (isIntl ? "intl" : "cn");
-      mono.textContent = isIntl ? "AI" : "CN";
-      mono.title = isIntl ? "国际 WorkBuddy AI" : "国内 WorkBuddy";
-      head.appendChild(mono);
 
       const ident = document.createElement("div");
       ident.className = "cred-identity";
@@ -5008,7 +5149,7 @@
       metaLine.className = "cred-meta-line";
       const scopeTxt = document.createElement("span");
       scopeTxt.textContent = acc.scope === "enterprise"
-        ? ("企业" + (acc.enterprise_id ? " · " + acc.enterprise_id : ""))
+        ? ("企业" + (acc.enterprise_id ? " · " + formatEnterpriseId(acc.enterprise_id) : ""))
         : "个人";
       metaLine.appendChild(scopeTxt);
       if (acc.quota && acc.quota.plan_name) {
@@ -5114,6 +5255,7 @@
       const completedToday = isDailyCompleted(acc);
       const row = document.createElement("div");
       row.className = "cred-list-row" + (acc.disabled ? " cred-card-disabled" : "");
+      row.dataset.authIndex = acc.auth_index || acc.id || "";
       row.title = "点击查看该账号的模型列表与消耗倍率";
       row.onclick = (e) => {
         if (e.target && e.target.closest("button, label.transfer-select-hit, input")) return;
@@ -5121,12 +5263,6 @@
       };
 
       row.appendChild(buildSelectCheckbox(acc, checkedAuthIndexes));
-
-      const mono = document.createElement("span");
-      const isIntl = acc.site === "workbuddy-ai";
-      mono.className = "site-monogram " + (isIntl ? "intl" : "cn");
-      mono.textContent = isIntl ? "AI" : "CN";
-      row.appendChild(mono);
 
       const ident = document.createElement("div");
       ident.className = "cred-identity";
@@ -5140,7 +5276,9 @@
       const metaLine = document.createElement("div");
       metaLine.className = "cred-meta-line";
       const scopeSpan = document.createElement("span");
-      scopeSpan.textContent = acc.scope === "enterprise" ? ("企业" + (acc.enterprise_id ? " · " + acc.enterprise_id : "")) : "个人";
+      scopeSpan.textContent = acc.scope === "enterprise"
+        ? ("企业" + (acc.enterprise_id ? " · " + formatEnterpriseId(acc.enterprise_id) : ""))
+        : "个人";
       metaLine.appendChild(scopeSpan);
       if (acc.quota && acc.quota.plan_name) {
         const isPro = /pro|plus|enterprise|vip/i.test(acc.quota.plan_name);
@@ -5310,10 +5448,9 @@
       return !!(acc && acc.daily_status && ["claimed", "done", "lit", "already_lit"].includes(acc.daily_status.outcome));
     }
 
-    // ---- Account Models Modal (same horizontal directional slide on tier switch) ----
+    // ---- Account Models Modal ----
     function selectModelTier(tier) {
       if (modelTierFilter === tier) return;
-      const forward = (MODEL_TIER_ORDER[tier] || 0) >= (MODEL_TIER_ORDER[modelTierFilter] || 0);
       modelTierFilter = tier;
       document.querySelectorAll("[data-model-tier]").forEach(btn => {
         const active = btn.getAttribute("data-model-tier") === tier;
@@ -5322,7 +5459,6 @@
       });
       syncSegmentedIndicator(el("modelTierSegmented"), false);
       renderModelsList();
-      playDirectionalSlide(el("modelsListBody"), forward);
     }
 
     function openModelsModal(acc) {
@@ -5336,7 +5472,7 @@
       el("modelsSearchInput").value = "";
       el("modelsModalTitle").textContent = formatAccountName(currentModelsData.label);
       const siteBadge = el("modelsSiteBadge");
-      siteBadge.textContent = acc.site === "workbuddy" ? "国内 CN" : acc.site === "workbuddy-ai" ? "国际 AI" : (acc.site || "--");
+      siteBadge.textContent = acc.site === "workbuddy" ? "国内" : acc.site === "workbuddy-ai" ? "国际" : (acc.site || "--");
       siteBadge.className = "badge " + (acc.site === "workbuddy" ? "badge-cn" : "badge-intl");
       el("modelsPrefixBadge").textContent = "加载中...";
       el("modelsListBody").innerHTML = '<div class="models-loading-state"><span class="btn-spinner"></span><span>正在读取账号模型列表...</span></div>';
@@ -5782,6 +5918,13 @@
 
     // ---- Boot ----
     window.addEventListener("resize", () => syncAllIndicators(true));
+    if (typeof ResizeObserver === "function") {
+      const indicatorObserver = new ResizeObserver(() => syncAllIndicators(true));
+      ["tabsStrip", "siteSegmented", "viewSegmented", "modelTierSegmented"].forEach(id => {
+        const node = el(id);
+        if (node) indicatorObserver.observe(node);
+      });
+    }
 
     async function initializeApp() {
       updateMaskButton();
@@ -5807,6 +5950,7 @@
         if (data && data.accounts && data.accounts.some(a => !a.quota && !a.disabled)) {
           await loadDashboard(true).catch(() => {});
         }
+        loadUsageStats(false, true).catch(() => {});
       } catch (_) {
       } finally {
         dashboardLoading = false;
